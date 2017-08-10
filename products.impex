@@ -1,0 +1,102 @@
+# -----------------------------------------------------------------------
+# [y] hybris Platform
+#
+# Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+#
+# This software is the confidential and proprietary information of SAP
+# ("Confidential Information"). You shall not disclose such Confidential
+# Information and shall use it only in accordance with the terms of the
+# license agreement you entered into with SAP.
+# -----------------------------------------------------------------------
+# ImpEx for Importing Products
+
+# Macros / Replacement Parameter definitions
+
+$productCatalog=apparelProductCatalog
+$baseProduct=baseProduct(code, catalogVersion(catalog(id[default='$productCatalog']),version[default='Staged']))
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$supercategories=supercategories(code, $catalogVersion)
+$approved=approvalstatus(code)[default='approved']
+$baseProduct=baseProduct(code,$catalogVersion)
+$taxGroup=Europe1PriceFactory_PTG(code)[default=eu-vat-full]
+
+INSERT_UPDATE Product;code[unique=true];$catalogVersion;unit(code);supercategories(code,$catalogVersion);varianttype(code);$approved;$taxGroup;ean;genders(code);productEligibleSites(uid)
+;111111;;pieces;caps;ApparelProduct;;;;MALE;apparel-uk
+;300441142;;pieces;Blue Tomato,caps;ApparelProduct;;;1022436212;MALE;apparel-uk
+;29531;;pieces;Toko,skigear;ApparelProduct;;;989514105;FEMALE;apparel-uk
+;29532;;pieces;Toko,skigear;ApparelProduct;;;953539556;MALE;apparel-uk
+;29533;;pieces;Toko,skigear;ApparelProduct;;;836246217;FEMALE;apparel-uk
+;30404;;pieces;Von Zipper,sunglasses;ApparelProduct;;;299052695;FEMALE;apparel-uk
+;300044600;;pieces;Toko,skigear;ApparelProduct;;;894972010;MALE;apparel-uk
+;300044601;;pieces;Toko,skigear;ApparelProduct;;;665812657;MALE;apparel-uk
+;300044617;;pieces;Anon,sunglasses;ApparelProduct;;;225522251;MALE;apparel-uk
+#
+;300044599;;pieces;Toko,skigear;ApparelProduct;;;619638137;FEMALE;apparel-de
+;300044623;;pieces;Anon,sunglasses;ApparelProduct;;;651338417;MALE;apparel-de
+;300044624;;pieces;Anon,sunglasses;ApparelProduct;;;475330206;MALE;apparel-de
+;300045375;;pieces;Quiksilver,sunglasses;ApparelProduct;;;657195251;MALE;apparel-de
+;300046522;;pieces;Periplus AC+Ion Guides,guides;ApparelProduct;;;646720493;MALE;apparel-de
+;300047513;;pieces;Von Zipper,sunglasses;ApparelProduct;;;383203982;MALE;apparel-de
+;300047195;;pieces;Roxy,sunglasses;ApparelProduct;;;209936540;FEMALE;apparel-de
+;300047196;;pieces;Roxy,sunglasses;ApparelProduct;;;684262402;MALE;apparel-de
+;300047199;;pieces;Roxy,sunglasses;ApparelProduct;;;346696791;FEMALE;apparel-de
+
+#########---SINGLE_PACK---########
+INSERT_UPDATE ApparelProduct;code[unique=true];$catalogVersion;unit(code);supercategories(code,$catalogVersion);$baseProduct;varianttype(code);$approved;
+;300441142_1;;pieces;Blue Tomato,caps;300441142;ApparelMixedPack;
+;29531_1;;pieces;Toko,skigear;29531;
+;29532_1;;pieces;Toko,skigear;29532;
+;29533_1;;pieces;Toko,skigear;29533;
+;30404_1;;pieces;Von Zipper,sunglasses;30404;
+;111111_1;;pieces;caps;ApparelProduct;111111;
+;300044600_1;;pieces;Toko,skigear;ApparelProduct;300044600;
+;300044601_1;;pieces;Toko,skigear;ApparelProduct;300044601;
+;300044617_1;;pieces;Anon,sunglasses;ApparelProduct;300044617;
+#
+;300044599_1;;pieces;Toko,skigear;ApparelProduct;300044599;
+;300044623_1;;pieces;Anon,sunglasses;ApparelProduct;300044623;
+;300044624_1;;pieces;Anon,sunglasses;ApparelProduct;300044624;
+;300045375_1;;pieces;Quiksilver,sunglasses;ApparelProduct;300045375;
+;300046522_1;;pieces;Periplus AC+Ion Guides,guides;300046522;
+;300047195_1;;pieces;Roxy,sunglasses;ApparelProduct;300047195;
+;300047196_1;;pieces;Roxy,sunglasses;ApparelProduct;300047196;
+;300047199_;;pieces;Roxy,sunglasses;ApparelProduct;300047199;
+;300047513_1;;pieces;Von Zipper,sunglasses;300047513;
+
+#########---MIXED_PACK---########
+INSERT_UPDATE ApparelMixedPack;code[unique=true];$catalogVersion;unit(code);supercategories(code,$catalogVersion);$baseProduct;$approved;associatedProducts(code,$catalogVersion);
+;29532_M;;pieces;Toko,skigear;29532_1;;29532_1,29531_1;
+#
+;300044623_M;;pieces;Anon,sunglasses;300044623_1;;300044623_1,300044624_1;
+
+#########---MULTI_PACK---########
+INSERT_UPDATE ApparelMultiVariantProduct;code[unique=true];$catalogVersion;unit(code);supercategories(code,$catalogVersion);$baseProduct;$approved;packSize;
+;111111_2;;pieces;caps;ApparelProduct;111111;;3
+;300044600_2;;pieces;Toko,skigear;ApparelProduct;300044600;;4
+;300044601_2;;pieces;Toko,skigear;ApparelProduct;300044601;;2
+;300044617_2;;pieces;Anon,sunglasses;ApparelProduct;300044617;;3
+#
+;300044599_2;;pieces;Toko,skigear;ApparelProduct;300044599;;5
+;300044623_2;;pieces;Anon,sunglasses;ApparelProduct;300044623;;4
+;300044624_2;;pieces;Anon,sunglasses;ApparelProduct;300044624;;2
+;300045375_2;;pieces;Quiksilver,sunglasses;ApparelProduct;300045375;;4
+
+INSERT_UPDATE SearchRestriction;code[unique=true];name[lang=en];query;principal(UID);restrictedType(code);active;generate
+;siteSpecificRestriction;country_restriction;"EXISTS ({{Select {pk} from {product} where {pk}={item:source} and {productEligibleSites} IN "apparel-uk"}})";productmanager-UK;Site2ProductRelation;true;true
+
+$defaultPassword=1234
+
+INSERT_UPDATE UserGroup;UID[unique=true];groups(uid)[mode=append]
+;productmanagergroup-Uk;cockpitgroup,employeegroup
+;productmanagergroup-DE;cockpitgroup,employeegroup
+
+INSERT_UPDATE Employee;UID[unique=true];password[default=$defaultPassword];description;name;groups(uid);sessionLanguage(isocode);sessionCurrency(isocode)
+;productmanager-UK;;Product manager;Product Manager;productmanagergroup-Uk;en;GBP
+;productmanager-DE;;Product manager;Product Manager;productmanagergroup-DE;de;EUR
+
+UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];writePrincipals(uid);
+;apparelProductCatalog;Online;productmanagergroup-Uk,productmanager-UK;
+;apparelProductCatalog;Staged;productmanagergroup-Uk,productmanager-UK;
+;apparelProductCatalog;Online;productmanagergroup-DE,productmanager-DE;
+;apparelProductCatalog;Staged;productmanagergroup-DE,productmanager-DE;
+
