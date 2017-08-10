@@ -82,7 +82,11 @@ INSERT_UPDATE ApparelMultiVariantProduct;code[unique=true];$catalogVersion;unit(
 ;300045375_2;;pieces;Quiksilver,sunglasses;ApparelProduct;300045375;;4
 
 INSERT_UPDATE SearchRestriction;code[unique=true];name[lang=en];query;principal(UID);restrictedType(code);active;generate
-;siteSpecificRestriction;country_restriction;"EXISTS ({{Select {pk} from {product} where {pk}={item:source} and {productEligibleSites} IN "apparel-uk"}})";productmanager-UK;Site2ProductRelation;true;true
+;siteSpecificRestriction;country_restriction;"{pk} IN ({{SELECT {ABR.target} FROM {CMSSite as B},{Site2ProductRelation AS ABR} WHERE {ABR.SOURCE}={B.PK} AND {B.uid} = ('apparel-uk')}})";productmanagergroup-Uk;Product;true;true
+
+
+INSERT_UPDATE SearchRestriction;code[unique=true];name[lang=en];query;principal(UID);restrictedType(code);active;generate
+;SiteSpecificRestrictionDE;country_restriction;"{pk} IN ({{SELECT {ABR.target} FROM {CMSSite as B},{Site2ProductRelation AS ABR} WHERE {ABR.SOURCE}={B.PK} AND {B.uid} = ('apparel-de')}})";productmanagergroup-DE;Product;true;true
 
 $defaultPassword=1234
 
@@ -94,9 +98,40 @@ INSERT_UPDATE Employee;UID[unique=true];password[default=$defaultPassword];descr
 ;productmanager-UK;;Product manager;Product Manager;productmanagergroup-Uk;en;GBP
 ;productmanager-DE;;Product manager;Product Manager;productmanagergroup-DE;de;EUR
 
-UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];writePrincipals(uid);
-;apparelProductCatalog;Online;productmanagergroup-Uk,productmanager-UK;
-;apparelProductCatalog;Staged;productmanagergroup-Uk,productmanager-UK;
-;apparelProductCatalog;Online;productmanagergroup-DE,productmanager-DE;
-;apparelProductCatalog;Staged;productmanagergroup-DE,productmanager-DE;
 
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];readPrincipals(uid)[mode=append];writePrincipals(uid)[mode=append]
+;apparelProductCatalog;Staged;productmanagergroup-Uk,productmanagergroup-DE;productmanagergroup-DE,productmanagergroup-Uk
+;apparelProductCatalog;Online;productmanagergroup-Uk,productmanagergroup-DE;productmanagergroup-DE,productmanagergroup-Uk
+
+
+$START_USERRIGHTS;;;;;;;;;
+Type;UID;MemberOfGroups;Password;Target;read;change;create;remove;change_perm
+UserGroup;productmanagergroup-Uk;cockpitgroup;;;;;;;
+
+# Access Rights for Products & Catalog;;;;;;;;;
+;;;;ItemSyncTimestamp;+;;;
+;;;;SyncItemJob;+;;;
+;;;;Type;+;;;
+;;;;Product;+;+;+;+;+;
+;;;;Category;+;+;+;+;+;
+;;;;variantType;+;+;+;+;+;
+;;;;Catalog;+;;;
+;;;;CatalogVersion;+;+;+;+;+;
+;;;;ClassificationAttributeUnit;+;;;
+;;;;Media;+;+;+;+;+;
+;;;;MediaContainer;+;+;+;+;+;
+;;;;MediaFormat;+;+;+;+;+;
+;;;;MediaFolder;+;+;+;+;+;
+;;;;Vendor;+;+;+;+;+;
+;;;;StockLevel;+;+;+;+;+;
+;;;;Tax;+;+;+;+;+;
+;;;;TaxRow;+;+;+;+;+;
+;;;;PriceRow;+;+;+;+;+;
+;;;;ProductFeature;+;+;+;+;+;
+;;;;ProductReference;+;+;+;+;+;
+;;;;Warehouse;+;+;+;+;+;
+;;;;ProductTaxCode;+;+;+;+;+;
+;;;;ProductOrderLimit;+;+;+;+;+;
+
+
+$END_USERRIGHTS;;;;;
