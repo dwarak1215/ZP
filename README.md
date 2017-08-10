@@ -7,5 +7,6 @@ To fulfill the requirement
 - Please find the created item-types in the shared trainingcore-items.xml file.
 - I have tried to create search restriction for product manager so he can see only products eligible for corresponding country.
 - Please see the UML diagram in design word document.
+- products.impex file contain sample product data
 Please run products.impex to see sample data
 
